@@ -1,0 +1,77 @@
+﻿<Window x:Class="WPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WPF"
+        xmlns:conv="clr-namespace:WPF.Converters"
+        mc:Ignorable="d"
+        Title="LogAnalyzer" Height="450" Width="800">
+    <Window.Resources>
+        <conv:MessageToColorConverter x:Key="MessageToColorConverter"/>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="2*"/>
+            
+        </Grid.RowDefinitions>
+        <!-- Панель фильтров, поиска и прочих элементов -->
+        <StackPanel Orientation="Horizontal" Margin="10" Grid.Row="0">
+            <Label Content="От:" VerticalAlignment="Center"/>
+            <DatePicker x:Name="DateFromPicker" SelectedDateChanged="DateFromPicker_SelectedDateChanged" Margin="5"/>
+            <TextBox x:Name="TimeFromTextBox" Width="50" Text="00:00"
+             PreviewTextInput="TimeTextBox_PreviewTextInput"
+             LostFocus="TimeFromTextBox_LostFocus" Margin="5"/>
+
+            <Label Content="До:" VerticalAlignment="Center"/>
+            <DatePicker x:Name="DateToPicker" SelectedDateChanged="DateToPicker_SelectedDateChanged" Margin="5"/>
+            <TextBox x:Name="TimeToTextBox" Width="50" Text="23:59"
+             PreviewTextInput="TimeTextBox_PreviewTextInput"
+             LostFocus="TimeToTextBox_LostFocus" Margin="5"/>
+
+            
+
+            <Label Content="Статус:" VerticalAlignment="Center" Margin="10,0,0,0"/>
+            <ComboBox x:Name="StatusFilterComboBox" Width="150" SelectionChanged="StatusFilterComboBox_SelectionChanged">
+                <ComboBoxItem Content="Все" IsSelected="True"/>
+                <ComboBoxItem Content="INFO"/>
+                <ComboBoxItem Content="WARN"/>
+                <ComboBoxItem Content="ERROR"/>
+                <ComboBoxItem Content="DEBUG"/>
+            </ComboBox>
+
+            <Label Content="Поиск:" VerticalAlignment="Center" Margin="10,0,0,0"/>
+            <TextBox x:Name="SearchTextBox" Width="200" TextChanged="SearchTextBox_TextChanged" Margin="5"/>
+
+            <Button Content="Скачать новые логи" 
+                    Click="DownloadButton_Click"
+                    Padding="10 5"
+                    Margin="0 0 0 10"/>
+            <ProgressBar x:Name="progressBar" 
+                         Height="20" 
+                         Width="300"
+                         IsIndeterminate="False"
+                         Margin="10"/>
+            <TextBlock x:Name="statusText"
+                       Margin="0 10 0 0"
+                       TextWrapping="Wrap"/>
+            <Button Content="Запустить анализ ИИ" Grid.Row="2" Margin="10" Width="150" Click="RunAnomalyDetectionButton_Click"/>
+        </StackPanel>
+        <!-- Область отображения логов -->
+        <ListView Name="LogsListView" Grid.Row="1" Margin="10" FontSize="16">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="Background" Value="{Binding Status, Converter={StaticResource MessageToColorConverter}}"/>
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Дата" DisplayMemberBinding="{Binding Date}" Width="150"/>
+                    <GridViewColumn Header="Статус" DisplayMemberBinding="{Binding Status}" Width="100"/>
+                    <GridViewColumn Header="Сообщение" DisplayMemberBinding="{Binding Message}" Width="600"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</Window>
